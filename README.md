@@ -6,7 +6,7 @@
 
 - [Tính năng](#-Tính-năng)
 - [Công nghệ sử dụng](#-Công-nghệ-sử-dụng)
-- [Cấu trúc dự án](#-project-structure)
+- [Cấu trúc dự án](#-Cấu-trúc-dự-án)
 - [Yêu cầu trước khi cài đặt](#-prerequisites)
 - [Hướng dẫn cài đặt](#-installation)
 - [Chạy ứng dụng](#-running-the-application)
@@ -88,7 +88,7 @@
 
 ---
 
-## 📁 Project Structure
+## 📁 Cấu trúc dự án
 
 ```
 Te_QuickRide/
