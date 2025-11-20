@@ -5,7 +5,7 @@
 ## 📋 Table of Contents
 
 - [Tính năng](#-Tính-năng)
-- [Công nghệ sử dụng](#-tech-stack)
+- [Công nghệ sử dụng](#-Công-nghệ-sử-dụng)
 - [Cấu trúc dự án](#-project-structure)
 - [Yêu cầu trước khi cài đặt](#-prerequisites)
 - [Hướng dẫn cài đặt](#-installation)
@@ -31,28 +31,28 @@
 - 📜 Quản lý lịch sử đặt vé
 
 ### Dành cho Nhà xe
-- 🚍 Manage routes and schedules
-- 🚌 Vehicle and seat layout configuration
-- 💰 Pricing and promotion management
-- 👥 Staff management (drivers, trip managers)
-- 📊 Real-time booking dashboard
-- 💵 Revenue reports and analytics
+- 🚍 Quản lý tuyến đường và lịch chạy
+- 🚌 Cấu hình xe và bố cục ghế 
+- 💰 Quản lý giá vé và khuyến mãi
+- 👥 Quản lý nhân sự (tài xế, quản lý chuyến)
+- 📊 Bảng điều khiển đặt vé theo thời gian thực
+- 💵 Báo cáo doanh thu và phân tích
 
-### For Trip Managers/Drivers
-- 📱 QR code ticket verification
-- 👥 Passenger list management
-- 🔄 Trip status updates
+### Dành cho Quản lý chuyến / Tài xế
+- 📱 QQuét mã QR để kiểm tra vé
+- 👥 Quản lý danh sách hành khách
+- 🔄 Cập nhật trạng thái chuyến đi
 
 ### For System Admins
-- 👤 User and operator management
-- ✅ Operator verification and approval
-- 📝 Content management (banners, blogs, FAQ)
-- 🆘 Complaint handling
-- 📈 System-wide reporting
+- 👤 Quản lý người dùng và nhà xe
+- ✅ Xác minh và phê duyệt nhà xe
+- 📝 Quản lý nội dung (banner, blog, FAQ)
+- 🆘 Xử lý khiếu nại
+- 📈 Báo cáo toàn hệ thống
 
 ---
 
-## 🛠 Tech Stack
+## 🛠 Công nghệ sử dụng
 
 ### Frontend
 - **Framework:** React 18
