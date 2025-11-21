@@ -609,6 +609,7 @@ Backend sẽ chạy tại: `http://localhost:5500`
 
 #### 3. Thiết Lập Frontend
 
+**Chạy Backend:**
 ```bash
 # Di chuyển vào thư mục frontend (từ root)
 cd frontend
@@ -917,7 +918,10 @@ sudo cp -r dist/* /var/www/vexenhanh/
 
 Chi tiết: Xem [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
 
----
+#### 2. Login
+```bash
+POST /api/v1/auth/login
+Content-Type: application/json
 
 ## Bảo Mật
 
