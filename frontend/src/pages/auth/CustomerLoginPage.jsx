@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Form, Input, Button, Card, message, Divider } from 'antd';
 import { MailOutlined, LockOutlined, GoogleOutlined, FacebookOutlined } from '@ant-design/icons';
-import useAuthStore from '../../store/authStore';
-import customerApi from '../../services/customerApi';
+// import useAuthStore from '../../store/authStore';
+// import customerApi from '../../services/customerApi';
 
 const CustomerLoginPage = () => {
   const [loading, setLoading] = useState(false);
