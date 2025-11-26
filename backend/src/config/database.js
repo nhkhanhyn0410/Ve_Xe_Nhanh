@@ -18,7 +18,8 @@ const connectDB = async () => {
             logger.warn('MongoDB Đã ngắt kết nối')
         });
     } catch (error) {
-        logger.error('Lỗi kết nối với MongoDb: ', error.message);
+        logger.error(`Lỗi kết nối với MongoDB: ${error.message}`);
+        throw error;
     }
 };
 
