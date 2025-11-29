@@ -1,0 +1,34 @@
+{
+  "name": "vexenhanh-monorepo",
+  "version": "1.0.0",
+  "description": "Vé xe nhanh Bus Booking System - Monorepo",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:frontend": "cd frontend && npm run lint",
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend && npm test"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nhkhanhyn0410/Te2_vexenhanh.git"
+  },
+  "author": "Vé xe nhanh Team",
+  "license": "MIT"
+}
