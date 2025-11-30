@@ -40,7 +40,7 @@ const AdminSidebar = () => {
       icon: <ShopOutlined />,
       label: 'Nhà Xe',
       description: 'Duyệt & quản lý',
-      badge: 3, // Pending approvals
+      badge: null, // Pending approvals
     },
     {
       key: 'complaints',
@@ -48,7 +48,7 @@ const AdminSidebar = () => {
       icon: <CustomerServiceOutlined />,
       label: 'Khiếu Nại',
       description: 'Xử lý khiếu nại',
-      badge: 5, // New complaints
+      badge: null, // New complaints
     },
     {
       key: 'content',
@@ -153,19 +153,7 @@ const AdminSidebar = () => {
       <div className="relative p-4 border-t border-slate-700/50">
         <div className="space-y-3">
           {/* System Status */}
-          <div className="bg-slate-800/50 rounded-lg p-3 backdrop-blur-sm border border-slate-700/30">
-            <div className="flex items-center justify-between mb-2">
-              <Text className="text-xs text-slate-400 font-medium">System Status</Text>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <Text className="text-xs text-green-400 font-medium">Online</Text>
-              </div>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <Text className="text-slate-500">Uptime: 99.9%</Text>
-              <Text className="text-slate-500">Load: 23%</Text>
-            </div>
-          </div>
+          
 
           {/* Quick Actions */}
           <div className="flex space-x-2">

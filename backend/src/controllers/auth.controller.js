@@ -118,7 +118,7 @@ exports.refreshToken = async (req, res, next) => {
       },
     });
   } catch (error) {
-    logger.error('Lỗi làm mới đếnken:', error);
+    logger.error('Lỗi làm mới token:', error);
     res.status(401).json({
       status: 'error',
       message: error.message || 'Làm mới token thất bại',
