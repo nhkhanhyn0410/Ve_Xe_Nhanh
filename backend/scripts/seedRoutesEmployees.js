@@ -61,7 +61,7 @@ const seedData = async () => {
         totalTrips: 2450,
       },
       {
-        email: 'operator2@quikride.com',
+        email: 'thanhbuoi@gmail.com',
         phone: '0282345678',
         password: 'operator123',
         companyName: 'Thành Bưởi Limousine',

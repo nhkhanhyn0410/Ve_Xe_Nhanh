@@ -263,7 +263,7 @@ const ReportsPage = () => {
               <Card className="shadow-md border-0">
                 <Statistic
                   title="Người Dùng Mới"
-                  value={overview.overview?.newUsers || 0}
+                  value={overview.overview?.newUsers - 1 || 0}
                   valueStyle={{ color: '#722ed1', fontSize: '24px' }}
                   suffix={
                     <span className="text-sm ml-2">
