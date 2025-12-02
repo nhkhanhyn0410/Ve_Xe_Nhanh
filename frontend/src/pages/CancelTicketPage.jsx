@@ -332,7 +332,7 @@ const CancelTicketPage = () => {
         </Card>
 
         <div className="mt-6 text-center text-sm text-gray-600">
-          <p>Cần hỗ trợ? Liên hệ hotline: <strong>1900-xxxx</strong></p>
+          <p>Cần hỗ trợ? Liên hệ hotline: <strong>1900-0000</strong></p>
           <p>Email: support@vexenhanh.vn</p>
         </div>
         </div>
