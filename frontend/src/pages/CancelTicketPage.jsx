@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Form, Input, Button, Card, message, Result, Steps, Modal } from 'antd';
 import {
   SearchOutlined,
@@ -8,7 +8,7 @@ import {
   PhoneOutlined,
   MailOutlined
 } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import bookingApi from '../services/bookingApi';
 import CustomerLayout from '../components/layouts/CustomerLayout';
 
@@ -21,6 +21,21 @@ const CancelTicketPage = () => {
   const [bookingInfo, setBookingInfo] = useState(null);
   const [cancellationSuccess, setCancellationSuccess] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Auto-fill form if data is passed from ticket lookup page
+  useEffect(() => {
+    if (location.state) {
+      const { bookingId, email, phone } = location.state;
+      if (bookingId || email || phone) {
+        form.setFieldsValue({
+          bookingId: bookingId || '',
+          email: email || '',
+          phone: phone || '',
+        });
+      }
+    }
+  }, [location.state, form]);
 
   const handleSearchBooking = async (values) => {
     setLoading(true);
@@ -122,13 +137,12 @@ const CancelTicketPage = () => {
                 name="bookingId"
                 rules={[
                   { required: true, message: 'Vui lòng nhập mã đặt vé' },
-                  { len: 24, message: 'Mã đặt vé không hợp lệ' },
+                  { min: 6, message: 'Mã đặt vé không hợp lệ' },
                 ]}
               >
                 <Input
-                  placeholder="Nhập mã đặt vé (24 ký tự)"
+                  placeholder="Nhập mã đặt vé"
                   size="large"
-                  maxLength={24}
                 />
               </Form.Item>
 

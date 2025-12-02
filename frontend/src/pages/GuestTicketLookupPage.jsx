@@ -24,6 +24,7 @@ import {
   UserOutlined,
   CheckCircleOutlined,
   ExclamationCircleOutlined,
+  CloseCircleOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
@@ -319,18 +320,8 @@ const GuestTicketLookupPage = () => {
                 <div>
                   <h4 className="font-semibold text-yellow-800 mb-1">Muốn hủy vé?</h4>
                   <p className="text-sm text-yellow-700">
-                    Vui lòng copy <strong>mã vé</strong> bên dưới và truy cập trang{' '}
-                    <a
-                      href="/cancel-ticket"
-                      className="text-blue-600 hover:text-blue-800 underline font-medium"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/cancel-ticket');
-                      }}
-                    >
-                      Hủy vé
-                    </a>
-                    {' '}để tiến hành hủy.
+                    Nhấn nút <strong className="text-red-600">"Hủy vé"</strong> bên cạnh vé để tiến hành hủy.
+                    Thông tin sẽ được tự động điền sẵn cho bạn.
                   </p>
                 </div>
               </div>
@@ -399,9 +390,16 @@ const GuestTicketLookupPage = () => {
                             <Button
                               danger
                               size="small"
+                              icon={<CloseCircleOutlined />}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                navigate('/tickets/cancel');
+                                navigate('/cancel-ticket', {
+                                  state: {
+                                    bookingId: ticket.bookingCode,
+                                    email: lookupData.email,
+                                    phone: lookupData.phone,
+                                  },
+                                });
                               }}
                             >
                               Hủy vé
