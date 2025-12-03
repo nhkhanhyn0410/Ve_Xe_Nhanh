@@ -299,22 +299,33 @@ class BookingService {
     await booking.save();
     logger.info(`[DEBUG] Booking ${booking.bookingCode} cancelled successfully`);
 
-    // STEP 2: Release seats back to trip
+    // STEP 2: Release seats back to trip (both booked and locked)
     try {
       const trip = await Trip.findById(booking.tripId);
 
       if (trip) {
-        // Remove from booked seats
         const seatNumbers = booking.seats.map((s) => s.seatNumber);
         logger.info(`[DEBUG] Releasing seats: ${seatNumbers.join(', ')} from trip ${trip._id}`);
 
+        // 2a. Remove from booked seats in Trip model
         trip.bookedSeats = trip.bookedSeats.filter(
           (s) => !seatNumbers.includes(s.seatNumber)
         );
         trip.availableSeats += seatNumbers.length;
         await trip.save();
 
-        logger.success(`[DEBUG] Successfully released ${seatNumbers.length} seats. Available seats: ${trip.availableSeats}`);
+        logger.success(`[DEBUG] Successfully released ${seatNumbers.length} seats from bookedSeats. Available seats: ${trip.availableSeats}`);
+
+        // 2b. Release locked seats from Redis (if any)
+        try {
+          // Try to release with any possible sessionId (we don't know the original sessionId)
+          // SeatLockService will release all locks for these seats regardless of sessionId
+          await SeatLockService.releaseSeatsForce(booking.tripId, seatNumbers);
+          logger.info(`[DEBUG] Released seat locks from Redis for seats: ${seatNumbers.join(', ')}`);
+        } catch (lockError) {
+          logger.warn(`[WARN] Failed to release seat locks from Redis (seats may not be locked): ${lockError.message}`);
+          // Continue - seats are already removed from bookedSeats
+        }
       }
     } catch (error) {
       logger.error(`[ERROR] Failed to release seats for booking ${booking.bookingCode}:`, error.message);
