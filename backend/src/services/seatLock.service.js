@@ -319,6 +319,53 @@ class SeatLockService {
       throw new Error('Không thể mở khóa tất cả ghế.');
     }
   }
+
+  /**
+   * Force release seat locks (regardless of who locked them)
+   * Used for administrative actions like booking cancellation
+   * @param {string} tripId - Trip ID
+   * @param {string[]} seatNumbers - Array of seat numbers to unlock
+   * @returns {Promise<Object>} Result with released seats
+   */
+  static async releaseSeatsForce(tripId, seatNumbers) {
+    try {
+      const redis = getRedisClient();
+      const released = [];
+      const notLocked = [];
+
+      for (const seatNumber of seatNumbers) {
+        const lockKey = this.getLockKey(tripId, seatNumber);
+
+        // Check if locked
+        const lockedBy = await redis.get(lockKey);
+
+        if (!lockedBy) {
+          notLocked.push(seatNumber);
+        } else {
+          // Force delete the lock (regardless of who owns it)
+          await redis.del(lockKey);
+
+          // Remove from trip's locked seats set
+          const tripLocksKey = this.getTripLocksKey(tripId);
+          await redis.sRem(tripLocksKey, seatNumber);
+
+          released.push(seatNumber);
+        }
+      }
+
+      return {
+        success: released.length > 0 || notLocked.length > 0,
+        released,
+        notLocked,
+        message: released.length > 0
+          ? `Force released ${released.length} seat(s)`
+          : 'No seats were locked',
+      };
+    } catch (error) {
+      logger.error('Lỗi force release ghế:', error);
+      throw new Error('Không thể force unlock ghế. Vui lòng thử lại.');
+    }
+  }
 }
 
 module.exports = SeatLockService;
