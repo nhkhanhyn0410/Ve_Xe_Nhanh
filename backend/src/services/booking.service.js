@@ -294,8 +294,13 @@ class BookingService {
       throw new Error(`Không thể hủy booking này. Trạng thái hiện tại: ${booking.status}`);
     }
 
-    // Release seats back to trip (for all valid bookings)
-    if (['pending', 'confirmed', 'paid', 'completed'].includes(booking.status)) {
+    // STEP 1: Cancel booking FIRST (to ensure booking status is updated even if later steps fail)
+    booking.cancel(reason, cancelledBy);
+    await booking.save();
+    logger.info(`[DEBUG] Booking ${booking.bookingCode} cancelled successfully`);
+
+    // STEP 2: Release seats back to trip
+    try {
       const trip = await Trip.findById(booking.tripId);
 
       if (trip) {
@@ -311,43 +316,55 @@ class BookingService {
 
         logger.success(`[DEBUG] Successfully released ${seatNumbers.length} seats. Available seats: ${trip.availableSeats}`);
       }
+    } catch (error) {
+      logger.error(`[ERROR] Failed to release seats for booking ${booking.bookingCode}:`, error.message);
+      // Continue even if seat release fails - booking is already cancelled
     }
 
-    // Release voucher usage if voucher was applied
+    // STEP 3: Release voucher usage if voucher was applied
     if (booking.voucherId) {
       try {
         await VoucherService.releaseFromBooking(booking.voucherId);
+        logger.info(`[DEBUG] Voucher released for booking ${booking.bookingCode}`);
       } catch (error) {
-        logger.error('Không thể sử dụng voucher:', error.message);
+        logger.error('Không thể release voucher:', error.message);
+        // Continue - booking is already cancelled
       }
     }
 
-    // Auto-refund if payment was made
-    let refundResult = null;
-    if (booking.paymentStatus === 'paid') {
+    // STEP 4: Note about refund (manual process for bank transfer/cash)
+    // Auto-refund is not applicable for bank transfer or cash payments
+    // Refund must be processed manually by operator/admin
+    let refundResult = {
+      success: false,
+      message: 'Hoàn tiền cần được xử lý thủ công bởi nhà xe',
+      refundAmount: refundAmount || 0,
+      paymentMethod: booking.paymentMethod,
+    };
+
+    // Only attempt auto-refund for VNPay payments
+    if (booking.paymentStatus === 'paid' && booking.paymentMethod === 'vnpay') {
       try {
         const PaymentServiceClass = getPaymentService();
         refundResult = await PaymentServiceClass.autoRefundOnCancellation(
           bookingId,
           reason,
           ipAddress,
-          refundAmount // Pass specific refund amount from cancellation policy
+          refundAmount
         );
 
         if (refundResult.success) {
-          logger.info('Hoàn tiền successful cho đặt chỗ:', bookingId);
+          logger.info(`Hoàn tiền VNPay thành công cho booking ${bookingId}`);
         } else {
-          logger.error('Hoàn tiền failed cho đặt chỗ:', bookingId);
+          logger.error(`Hoàn tiền VNPay thất bại cho booking ${bookingId}`);
         }
       } catch (error) {
-        logger.error('Hoàn tiền lỗi:', error.message);
-        // Don't fail the cancellation if refund fails
+        logger.error('Lỗi hoàn tiền VNPay:', error.message);
+        refundResult.message = `Lỗi hoàn tiền: ${error.message}`;
       }
+    } else if (booking.paymentStatus === 'paid') {
+      logger.info(`Booking ${bookingId} thanh toán bằng ${booking.paymentMethod} - Cần hoàn tiền thủ công`);
     }
-
-    // Cancel booking
-    booking.cancel(reason, cancelledBy);
-    await booking.save();
 
     return {
       booking,
