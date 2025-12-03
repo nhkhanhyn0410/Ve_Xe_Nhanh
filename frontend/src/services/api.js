@@ -28,8 +28,8 @@ api.interceptors.request.use(
       tokenKey = 'operator-token';
     } else if (config.url?.includes('/trip-manager/') ||
       (config.url?.includes('/employees/') && currentPath.startsWith('/trip-manager'))) {
-      storageKey = 'trip-manager-auth-storage';
-      tokenKey = 'trip-manager-token';
+      storageKey = 'tripmanager-auth-storage';
+      tokenKey = 'tripmanager-token';
     } else if (currentPath.startsWith('/admin')) {
       storageKey = 'admin-auth-storage';
       tokenKey = 'admin-token';
@@ -37,8 +37,8 @@ api.interceptors.request.use(
       storageKey = 'operator-auth-storage';
       tokenKey = 'operator-token';
     } else if (currentPath.startsWith('/trip-manager')) {
-      storageKey = 'trip-manager-auth-storage';
-      tokenKey = 'trip-manager-token';
+      storageKey = 'tripmanager-auth-storage';
+      tokenKey = 'tripmanager-token';
     } else {
       // Default to customer auth
       storageKey = 'auth-storage';
