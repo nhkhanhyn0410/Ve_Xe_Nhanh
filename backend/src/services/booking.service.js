@@ -321,7 +321,24 @@ class BookingService {
       // Continue even if seat release fails - booking is already cancelled
     }
 
-    // STEP 3: Release voucher usage if voucher was applied
+    // STEP 3: Cancel associated ticket
+    try {
+      const Ticket = require('../models/Ticket');
+      const ticket = await Ticket.findOne({ bookingId: booking._id });
+
+      if (ticket) {
+        ticket.cancel(reason);
+        await ticket.save();
+        logger.info(`[DEBUG] Ticket ${ticket.ticketCode} cancelled successfully`);
+      } else {
+        logger.warn(`[WARN] No ticket found for booking ${booking.bookingCode}`);
+      }
+    } catch (error) {
+      logger.error(`[ERROR] Failed to cancel ticket for booking ${booking.bookingCode}:`, error.message);
+      // Continue - booking is already cancelled
+    }
+
+    // STEP 4: Release voucher usage if voucher was applied
     if (booking.voucherId) {
       try {
         await VoucherService.releaseFromBooking(booking.voucherId);
@@ -332,7 +349,7 @@ class BookingService {
       }
     }
 
-    // STEP 4: Note about refund (manual process for bank transfer/cash)
+    // STEP 5: Note about refund (manual process for bank transfer/cash)
     // Auto-refund is not applicable for bank transfer or cash payments
     // Refund must be processed manually by operator/admin
     let refundResult = {
@@ -342,7 +359,7 @@ class BookingService {
       paymentMethod: booking.paymentMethod,
     };
 
-    // Only attempt auto-refund for VNPay payments
+    // STEP 6: Only attempt auto-refund for VNPay payments
     if (booking.paymentStatus === 'paid' && booking.paymentMethod === 'vnpay') {
       try {
         const PaymentServiceClass = getPaymentService();

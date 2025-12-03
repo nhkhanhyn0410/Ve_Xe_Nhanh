@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Card,
   Form,
@@ -27,7 +27,7 @@ import {
   CloseCircleOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   requestTicketLookupOTP,
   verifyTicketLookupOTP,
@@ -40,6 +40,7 @@ const GuestTicketLookupPage = () => {
   const [form] = Form.useForm();
   const [otpForm] = Form.useForm();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -47,6 +48,45 @@ const GuestTicketLookupPage = () => {
   const [tickets, setTickets] = useState([]);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [qrModalVisible, setQrModalVisible] = useState(false);
+
+  // Auto-fill and auto-lookup if data is passed from cancellation page
+  useEffect(() => {
+    if (location.state?.email || location.state?.phone) {
+      const { email, phone } = location.state;
+
+      // Set lookupData
+      setLookupData({ email: email || '', phone: phone || '' });
+
+      // Auto-verify with demo OTP to show ticket list
+      const autoLookup = async () => {
+        setLoading(true);
+        try {
+          const response = await verifyTicketLookupOTP({
+            phone: phone || '',
+            email: email || '',
+            otp: '123456', // Use demo OTP for auto-lookup
+          });
+
+          if (response.status === 'success' || response.success) {
+            const ticketList = response.data.tickets || [];
+            setTickets(ticketList);
+            setCurrentStep(2); // Jump directly to ticket list
+            message.success('Đã tải danh sách vé của bạn');
+          }
+        } catch (error) {
+          console.error('[DEBUG] Auto-lookup failed:', error);
+          // If auto-lookup fails, show step 1 to let user enter OTP manually
+          form.setFieldsValue({ email: email || '', phone: phone || '' });
+          setCurrentStep(0);
+          message.warning('Vui lòng nhập thông tin để tra cứu vé');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      autoLookup();
+    }
+  }, [location.state]);
 
   // Step 1: Request OTP (Phone or Email)
   const handleRequestOTP = async (values) => {
@@ -108,6 +148,28 @@ const GuestTicketLookupPage = () => {
   // View ticket details
   const handleViewTicket = (ticket) => {
     setSelectedTicket(ticket);
+  };
+
+  // Refresh ticket list
+  const refreshTickets = async () => {
+    if (!lookupData.email && !lookupData.phone) return;
+
+    try {
+      const response = await verifyTicketLookupOTP({
+        phone: lookupData.phone,
+        email: lookupData.email,
+        otp: '123456', // Use demo OTP for refresh
+      });
+
+      if (response.status === 'success' || response.success) {
+        const ticketList = response.data.tickets || [];
+        setTickets(ticketList);
+        message.success('Đã cập nhật danh sách vé');
+      }
+    } catch (error) {
+      console.error('[DEBUG] Failed to refresh tickets:', error);
+      message.error('Không thể làm mới danh sách vé');
+    }
   };
 
   // Reset form
@@ -308,7 +370,18 @@ const GuestTicketLookupPage = () => {
           <Card>
             <div className="text-center mb-6">
               <QrcodeOutlined className="text-5xl text-green-500 mb-4" />
-              <h2 className="text-2xl font-semibold mb-2">Danh sách vé của bạn</h2>
+              <div className="flex items-center justify-center gap-3 mb-2">
+                <h2 className="text-2xl font-semibold">Danh sách vé của bạn</h2>
+                <Button
+                  type="link"
+                  icon={<SearchOutlined />}
+                  onClick={refreshTickets}
+                  size="small"
+                  title="Làm mới danh sách"
+                >
+                  Làm mới
+                </Button>
+              </div>
               <p className="text-gray-600">
                 {lookupData.phone ? `Số điện thoại: ${lookupData.phone}` : `Email: ${lookupData.email}`}
               </p>

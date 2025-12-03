@@ -312,7 +312,19 @@ const CancelTicketPage = () => {
               title="Hủy vé thành công!"
               subTitle="Tiền sẽ được hoàn lại vào tài khoản của bạn trong 3-7 ngày làm việc. Bạn sẽ nhận được email xác nhận."
               extra={[
-                <Button type="primary" key="home" onClick={() => navigate('/')}>
+                <Button
+                  type="primary"
+                  key="lookup"
+                  onClick={() => navigate('/tickets/lookup', {
+                    state: {
+                      email: bookingInfo.email,
+                      phone: bookingInfo.phone,
+                    }
+                  })}
+                >
+                  Quay lại danh sách vé
+                </Button>,
+                <Button key="home" onClick={() => navigate('/')}>
                   Về trang chủ
                 </Button>,
                 <Button
